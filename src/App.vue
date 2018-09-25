@@ -1,11 +1,12 @@
 <template lang="pug">
 #app
-	h1 musica
+	h2 {{newTitle}}
+	h1 Top en {{selectedCountry}}
 	select(v-model="selectedCountry")
 		option(v-for="country in countries" v-bind:value="country.value") {{country.name}}
 	spinner(v-show="loading")
 	ul
-		artists(v-for="artist in artists" :artist="artist" :key="artist.mbi")
+		artists(v-for="artist in orderedArtist" :artist="artist" :key="artist.mbi")
 </template>
 
 <script>
@@ -16,6 +17,7 @@ export default {
 
   data () {
     return {
+			title:'Musica',
       artists: [],
 			countries:[
 				{name:'Argentina', value:'argentina'},
@@ -33,7 +35,7 @@ export default {
 	methods:{
 		refreshArtist(){
 			const self =this
-			
+
 			getArtists(this.selectedCountry)
 			.then(function(artists){
 				self.loading=false
@@ -42,8 +44,17 @@ export default {
 			.catch(err => console.log(err))
 		},
 	},
+	computed: {
+		orderedArtist(){
+			return this.artists.sort((a, b)=>((a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0)))
+		},
+		newTitle(){
+			return this.title.toUpperCase()
+		}
+	},
 	mounted(){
 		this.refreshArtist()
+		console.log("asdasd")
 	},
 	watch:{
 		selectedCountry(){
